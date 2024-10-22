@@ -1,4 +1,4 @@
-package com.mycompany.adminusers.dto;
+package com.mycompany.projectofinal.dto;
 
 import java.awt.event.*;
 import javax.swing.*;

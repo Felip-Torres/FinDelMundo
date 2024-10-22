@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.adminusers.dto;
+package com.mycompany.projectofinal.dto;
 
 import java.sql.Date;
 
@@ -81,6 +81,19 @@ public class Intent {
         return "Intent{" + "id=" + id + ", idUsuari=" + idUsuari + ", idEjercicio=" + idEjercicio + ", IniciDate=" + Inici + ", Fi=" + Fi + ", Videofile=" + Videofile + '}';
     }
     
+    public String[] toArrayString() {
+        String[] st = new String[6];
+    
+        // Convertimos los atributos a String y los asignamos al array
+        st[0] = String.valueOf(id); 
+        st[1] = String.valueOf(idUsuari);
+        st[2] = String.valueOf(idEjercicio);
+        st[3] = (Inici != null) ? Inici.toString() : "";
+        st[4] = (Fi != null) ? Fi.toString() : "";
+        st[5] = Videofile;
+    
+    return st;
+}
     
     
 }

@@ -1,9 +1,9 @@
-package com.mycompany.adminusers.dataacces;
+package com.mycompany.projectofinal.dataacces;
 
 
-import com.mycompany.adminusers.dto.Intent;
-import com.mycompany.adminusers.dto.Review;
-import com.mycompany.adminusers.dto.Usuari;
+import com.mycompany.projectofinal.dto.Intent;
+import com.mycompany.projectofinal.dto.Review;
+import com.mycompany.projectofinal.dto.Usuari;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,16 +22,16 @@ import java.util.Properties;
  */
 public class DataAccess {
 
-    private Connection getConnection() {
+    private Connection getConnection(){
         Connection connection = null;
+        
+        String coString="jdbc:sqlserver://localhost;database=simulapdb202315101357;encrypt=true;trustServerCertificate=true;"+"user=felip;password=12;";
         try {
-            String connectionUrl = "jdbc:sqlserver://localhost:1433;database=simulapdb202315101357;user=felip;password=12;encrypt=false;loginTimeout=10;";
-
-            connection = DriverManager.getConnection(connectionUrl);
-         
-        } catch (Exception e) {
-            e.printStackTrace();
+            connection = DriverManager.getConnection(coString);
+        } catch (SQLException ex) {
+            Logger.getLogger(DataAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         return connection;
     }
 
@@ -45,7 +47,7 @@ public class DataAccess {
                 user.setNom(resultSet.getString("Nom"));
                 user.setEmail(resultSet.getString("Email"));
                 user.setPasswordHash(resultSet.getString("PasswordHash"));
-                user.setInstructor(resultSet.getBoolean("Instructor"));
+                user.setInstructor(resultSet.getBoolean("IsInstructor"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -55,7 +57,7 @@ public class DataAccess {
 
     public ArrayList<Usuari> getAllUsers() {
         ArrayList<Usuari> usuaris = new ArrayList<>();
-        String sql = "SELECT * FROM Usuaris WHERE Instructor=0";
+        String sql = "SELECT * FROM Usuaris WHERE IsInstructor=0";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
 
             ResultSet resultSet = selectStatement.executeQuery();
@@ -66,7 +68,7 @@ public class DataAccess {
                 user.setNom(resultSet.getString("Nom"));
                 user.setEmail(resultSet.getString("Email"));
                 user.setPasswordHash(resultSet.getString("PasswordHash"));
-                user.setInstructor(resultSet.getBoolean("Instructor"));
+                user.setInstructor(resultSet.getBoolean("IsInstructor"));
                 usuaris.add(user);
             }
         } catch (SQLException e) {
@@ -93,15 +95,16 @@ public class DataAccess {
         return 0;
     }
 
-    public ArrayList<Intent> getAttemptsPendingReview() {
+    public ArrayList<Intent> getAttemptsPendingReview(String nom) {
         ArrayList<Intent> intents = new ArrayList<>();
         String sql = "SELECT * FROM Intents INNER JOIN Usuaris ON Intents.IdUsuari=Usuaris.Id"
                 + " INNER JOIN Exercicis ON Intents.IdExercici=Exercicis.Id"
-                + " WHERE Intents.Id NOT IN"
-                + " (SELECT IdIntent FROM Review)"
+                + " WHERE Intents.Id NOT IN (SELECT IdIntent FROM Review)"
+                + " and Nom=?"
                 + " ORDER BY Timestamp_Inici";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
 
+            selectStatement.setString(1, nom);
             ResultSet resultSet = selectStatement.executeQuery();
 
             while (resultSet.next()) {
