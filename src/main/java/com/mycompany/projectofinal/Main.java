@@ -8,9 +8,10 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.mycompany.projectofinal.dataacces.DataAccess;
 import com.mycompany.projectofinal.dto.Intent;
 import com.mycompany.projectofinal.dto.Usuari;
+
+import java.net.URL;
 import java.util.ArrayList;
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -220,8 +221,14 @@ public class Main extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/projectofinal/logo.jpg"))); // NOI18N
-        jLabelIcon.setText("jLabel1");
+
+        URL iconUrl = getClass().getResource("com/mycompany/projectofinal/logo.jpg");
+        if (iconUrl != null) {
+            jLabelIcon.setIcon(new ImageIcon(iconUrl));
+        } else {
+            System.err.println("Icon not found!");
+        }
+        jLabelIcon.setText("logo");
 
         jMenu2.setText("File");
         jMenuBar1.add(jMenu2);
