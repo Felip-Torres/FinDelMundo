@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Container class="javax.swing.JDialog" name="jDialog1">
 
@@ -142,8 +142,11 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+      <Color blue="0" green="0" red="0" type="rgb"/>
+    </Property>
     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-      <Color blue="0" green="0" id="black" palette="1" red="0" type="palette"/>
+      <Color blue="ff" green="ff" id="white" palette="1" red="ff" type="palette"/>
     </Property>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
@@ -314,11 +317,18 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabelIcon">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/com/mycompany/projectofinal/logo.jpg"/>
+          <Image iconType="3" name="/com/mycompany/projectofinal/logo2.jpg"/>
         </Property>
         <Property name="text" type="java.lang.String" value="logo"/>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="*/        &#xd;&#xa;jLabelIcon.setForeground(new java.awt.Color(255, 255, 255));&#xd;&#xa;jLabelIcon.setText(&quot;logo&quot;);&#xd;&#xa;}"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="        String imagePath = &quot;src/main/java/com/mycompany/projectofinal/logo2.png&quot;;&#xa;        &#xa;        // Verificar que el archivo exista&#xa;        File imageFile = new File(imagePath);&#xa;        if (imageFile.exists()) {&#xa;            jLabelIcon.setIcon(new ImageIcon(imageFile.getAbsolutePath()));&#xa;            System.out.println(&quot;Imagen cargada correctamente desde &quot; + imagePath);&#xa;        } else {/*Comento el codigo que genera  netbeans ya que siempre da una excepcion"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

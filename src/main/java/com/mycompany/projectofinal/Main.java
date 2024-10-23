@@ -8,11 +8,14 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.mycompany.projectofinal.dataacces.DataAccess;
 import com.mycompany.projectofinal.dto.Intent;
 import com.mycompany.projectofinal.dto.Usuari;
+import java.io.File;
 
 import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Color;
+
 
 /**
  *
@@ -28,6 +31,7 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         initlista();
+        getContentPane().setBackground(Color.decode("#10191B"));
     }
     
     
@@ -151,7 +155,8 @@ public class Main extends javax.swing.JFrame {
         jMenu1.setText("jMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setForeground(java.awt.Color.black);
+        setBackground(new java.awt.Color(0, 0, 0));
+        setForeground(java.awt.Color.white);
         setResizable(false);
 
         jButton1.setText("Login");
@@ -221,14 +226,21 @@ public class Main extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        String imagePath = "src/main/java/com/mycompany/projectofinal/logo2.png";
 
-        URL iconUrl = getClass().getResource("com/mycompany/projectofinal/logo.jpg");
-        if (iconUrl != null) {
-            jLabelIcon.setIcon(new ImageIcon(iconUrl));
-        } else {
-            System.err.println("Icon not found!");
+        // Verificar que el archivo exista
+        File imageFile = new File(imagePath);
+        if (imageFile.exists()) {
+            jLabelIcon.setIcon(new ImageIcon(imageFile.getAbsolutePath()));
+            System.out.println("Imagen cargada correctamente desde " + imagePath);
+        } else {/*Comento el codigo que genera  netbeans ya que siempre da una excepcion
+            jLabelIcon.setForeground(new java.awt.Color(255, 255, 255));
+            jLabelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/mycompany/projectofinal/logo2.jpg"))); // NOI18N
+            jLabelIcon.setText("logo");
+            */        
+            jLabelIcon.setForeground(new java.awt.Color(255, 255, 255));
+            jLabelIcon.setText("logo");
         }
-        jLabelIcon.setText("logo");
 
         jMenu2.setText("File");
         jMenuBar1.add(jMenu2);
@@ -359,6 +371,7 @@ public class Main extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Main().setVisible(true);
+                
             }
         });
     }
