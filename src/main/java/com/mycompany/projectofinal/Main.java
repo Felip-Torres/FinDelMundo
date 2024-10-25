@@ -31,7 +31,7 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         initlista();
-        getContentPane().setBackground(Color.decode("#10191B"));
+        //getContentPane().setBackground(Color.decode("#10191B"));
     }
     
     
@@ -226,7 +226,7 @@ public class Main extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        String imagePath = "src/main/java/com/mycompany/projectofinal/logo2.png";
+        String imagePath = "src/main/java/com/mycompany/projectofinal/logo2.jpg";
 
         // Verificar que el archivo exista
         File imageFile = new File(imagePath);

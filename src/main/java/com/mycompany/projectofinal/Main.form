@@ -327,7 +327,7 @@
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="*/        &#xd;&#xa;jLabelIcon.setForeground(new java.awt.Color(255, 255, 255));&#xd;&#xa;jLabelIcon.setText(&quot;logo&quot;);&#xd;&#xa;}"/>
-        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="        String imagePath = &quot;src/main/java/com/mycompany/projectofinal/logo2.png&quot;;&#xa;        &#xa;        // Verificar que el archivo exista&#xa;        File imageFile = new File(imagePath);&#xa;        if (imageFile.exists()) {&#xa;            jLabelIcon.setIcon(new ImageIcon(imageFile.getAbsolutePath()));&#xa;            System.out.println(&quot;Imagen cargada correctamente desde &quot; + imagePath);&#xa;        } else {/*Comento el codigo que genera  netbeans ya que siempre da una excepcion"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="        String imagePath = &quot;src/main/java/com/mycompany/projectofinal/logo2.jpg&quot;;&#xa;        &#xa;        // Verificar que el archivo exista&#xa;        File imageFile = new File(imagePath);&#xa;        if (imageFile.exists()) {&#xa;            jLabelIcon.setIcon(new ImageIcon(imageFile.getAbsolutePath()));&#xa;            System.out.println(&quot;Imagen cargada correctamente desde &quot; + imagePath);&#xa;        } else {/*Comento el codigo que genera  netbeans ya que siempre da una excepcion"/>
       </AuxValues>
     </Component>
   </SubComponents>
