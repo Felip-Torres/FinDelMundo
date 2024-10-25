@@ -5,6 +5,7 @@
 package com.mycompany.projectofinal;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.mycompany.projectofinal.TablasAbstractas.TablasIntentos;
 import com.mycompany.projectofinal.dataacces.DataAccess;
 import com.mycompany.projectofinal.dto.Intent;
 import com.mycompany.projectofinal.dto.Usuari;
@@ -15,6 +16,11 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 /**
@@ -32,6 +38,9 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         initlista();
         //getContentPane().setBackground(Color.decode("#10191B"));
+        jLabelWeb.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        
     }
     
     
@@ -75,7 +84,9 @@ public class Main extends javax.swing.JFrame {
         jTableIntentos = new javax.swing.JTable();
         jLabelIntentos = new javax.swing.JLabel();
         jLabelClientes = new javax.swing.JLabel();
+        jPanelVideo = new javax.swing.JPanel();
         jLabelIcon = new javax.swing.JLabel();
+        jLabelWeb = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
@@ -198,6 +209,19 @@ public class Main extends javax.swing.JFrame {
 
         jLabelClientes.setText("Clientes");
 
+        jPanelVideo.setBorder(javax.swing.BorderFactory.createTitledBorder("Video player"));
+
+        javax.swing.GroupLayout jPanelVideoLayout = new javax.swing.GroupLayout(jPanelVideo);
+        jPanelVideo.setLayout(jPanelVideoLayout);
+        jPanelVideoLayout.setHorizontalGroup(
+            jPanelVideoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanelVideoLayout.setVerticalGroup(
+            jPanelVideoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 218, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jPanelListasLayout = new javax.swing.GroupLayout(jPanelListas);
         jPanelListas.setLayout(jPanelListasLayout);
         jPanelListasLayout.setHorizontalGroup(
@@ -207,11 +231,12 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabelIntentos, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanelVideo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
         );
         jPanelListasLayout.setVerticalGroup(
             jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,9 +245,12 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jLabelClientes)
                     .addComponent(jLabelIntentos))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane3))
+                .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 427, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanelListasLayout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanelVideo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -242,6 +270,14 @@ public class Main extends javax.swing.JFrame {
             jLabelIcon.setText("logo");
         }
 
+        jLabelWeb.setForeground(new java.awt.Color(0, 204, 255));
+        jLabelWeb.setText("<html>\n\n<a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley'>WEB</a>\n\n</html>"); // NOI18N
+        jLabelWeb.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelWebMouseClicked(evt);
+            }
+        });
+
         jMenu2.setText("File");
         jMenuBar1.add(jMenu2);
 
@@ -260,6 +296,8 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jPanelListas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabelWeb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1)))
                 .addContainerGap())
@@ -272,7 +310,8 @@ public class Main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jLabelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelWeb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -291,16 +330,9 @@ public class Main extends javax.swing.JFrame {
                 ArrayList<Intent> attempts = da.getAttemptsPendingReview(selectedUser);
 
                 // Crear un modelo para la JTable
-                DefaultTableModel model = new DefaultTableModel();
+                TablasIntentos model = new TablasIntentos(attempts);
 
-                // Agregar columnas al modelo
-                model.setColumnIdentifiers(new Object[] {"Id", "IdUsuario", "IdEjercicio", "Timestamp Inicio", "Timestamp Fin", "Video File"});
-
-
-                // Llenar el modelo con los datos de los intentos
-                for (Intent attempt : attempts) {
-                    model.addRow(attempt.toArrayString());
-                }
+                
 
                 // Asignar el modelo a la JTable
                 jTableIntentos.setModel(model);
@@ -339,6 +371,14 @@ public class Main extends javax.swing.JFrame {
         jDialog1.pack();
         jDialog1.setVisible(true);        // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jLabelWebMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelWebMouseClicked
+        try {
+            Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"));
+        } catch (URISyntaxException | IOException ex) {
+            System.out.println("Algo fue mal");
+        }        
+    }//GEN-LAST:event_jLabelWebMouseClicked
 
     /**
      * @param args the command line arguments
@@ -385,6 +425,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelEmail;
     private javax.swing.JLabel jLabelIcon;
     private javax.swing.JLabel jLabelIntentos;
+    private javax.swing.JLabel jLabelWeb;
     private javax.swing.JList<String> jListClientes;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -393,6 +434,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanelListas;
+    private javax.swing.JPanel jPanelVideo;
     private javax.swing.JPasswordField jPasswordField;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;

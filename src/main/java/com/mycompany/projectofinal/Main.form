@@ -176,6 +176,8 @@
                   <Component id="jPanelListas" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabelIcon" min="-2" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="jLabelWeb" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="jButton1" max="-2" attributes="0"/>
                   </Group>
@@ -193,6 +195,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabelIcon" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
+                  <Component id="jLabelWeb" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -226,12 +229,13 @@
                       <Component id="jScrollPane3" min="-2" pref="148" max="-2" attributes="0"/>
                       <Component id="jLabelClientes" alignment="0" min="-2" pref="122" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabelIntentos" min="-2" pref="264" max="-2" attributes="0"/>
                       <Component id="jScrollPane2" min="-2" pref="476" max="-2" attributes="0"/>
+                      <Component id="jPanelVideo" alignment="0" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -243,9 +247,13 @@
                       <Component id="jLabelIntentos" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="jScrollPane2" max="32767" attributes="0"/>
-                      <Component id="jScrollPane3" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jScrollPane3" min="-2" pref="427" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="jScrollPane2" min="-2" pref="180" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jPanelVideo" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -313,6 +321,28 @@
             <Property name="text" type="java.lang.String" value="Clientes"/>
           </Properties>
         </Component>
+        <Container class="javax.swing.JPanel" name="jPanelVideo">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="Video player"/>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <EmptySpace min="0" pref="218" max="32767" attributes="0"/>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+        </Container>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JLabel" name="jLabelIcon">
@@ -329,6 +359,17 @@
         <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="*/        &#xd;&#xa;jLabelIcon.setForeground(new java.awt.Color(255, 255, 255));&#xd;&#xa;jLabelIcon.setText(&quot;logo&quot;);&#xd;&#xa;}"/>
         <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="        String imagePath = &quot;src/main/java/com/mycompany/projectofinal/logo2.jpg&quot;;&#xa;        &#xa;        // Verificar que el archivo exista&#xa;        File imageFile = new File(imagePath);&#xa;        if (imageFile.exists()) {&#xa;            jLabelIcon.setIcon(new ImageIcon(imageFile.getAbsolutePath()));&#xa;            System.out.println(&quot;Imagen cargada correctamente desde &quot; + imagePath);&#xa;        } else {/*Comento el codigo que genera  netbeans ya que siempre da una excepcion"/>
       </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabelWeb">
+      <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="cc" red="0" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xa;&#xa;&lt;a href=&apos;https://www.youtube.com/watch?v=dQw4w9WgXcQ&amp;ab_channel=RickAstley&apos;&gt;WEB&lt;/a&gt;&#xa;&#xa;&lt;/html&gt;" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabelWebMouseClicked"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
