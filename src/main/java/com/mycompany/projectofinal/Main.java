@@ -10,6 +10,7 @@ import com.mycompany.projectofinal.TablasAbstractas.TablasIntentos;
 import com.mycompany.projectofinal.dataacces.DataAccess;
 import com.mycompany.projectofinal.dto.Intent;
 import com.mycompany.projectofinal.dto.Usuari;
+import java.awt.BorderLayout;
 import java.io.File;
 
 import java.net.URL;
@@ -24,7 +25,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import javax.swing.table.TableRowSorter;
-
+import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 /**
  *
@@ -35,6 +38,8 @@ public class Main extends javax.swing.JFrame {
     private boolean logeado=true;//Recuerda ponerlo ha falso
     private TableRowSorter<TablasIntentos> sorter;
     private Logica logica = new Logica();
+    private JFileChooser fc= new JFileChooser();
+    private EmbeddedMediaPlayerComponent mp;
 
     /**
      * Creates new form Main
@@ -44,6 +49,9 @@ public class Main extends javax.swing.JFrame {
         initlista();
         //getContentPane().setBackground(Color.decode("#10191B"));
         jLabelWeb.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        mp = new EmbeddedMediaPlayerComponent();
+        jPanelVideo.add(mp, BorderLayout.CENTER);
         
         
     }
@@ -409,8 +417,14 @@ public class Main extends javax.swing.JFrame {
         int row = jTableIntentos.rowAtPoint(evt.getPoint());
         int column = jTableIntentos.columnAtPoint(evt.getPoint());
         // Obtener el valor de la casilla seleccionada
-        Object casilla = jTableIntentos.getValueAt(row, column);
-        System.out.println("Clic en la celda en fila " + row + ", columna " + column + ": " + casilla);
+        if(column==5){
+            Object casilla = jTableIntentos.getValueAt(row, column);
+            System.out.println(casilla);
+            String path= "src/main/java/videos/" + casilla;
+
+            mp.mediaPlayer().media().play(path);
+            
+        }
     }//GEN-LAST:event_jTableIntentosMouseClicked
 
     /**

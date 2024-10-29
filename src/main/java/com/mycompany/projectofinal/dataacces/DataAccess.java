@@ -37,13 +37,12 @@ public class DataAccess {
 
     public Usuari getUser(String email) {
         Usuari user = null;
+        if(email.equals(""))return null;
         String sql = "SELECT * FROM Usuaris WHERE Email = ?";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
             selectStatement.setString(1, email);
             ResultSet resultSet = selectStatement.executeQuery();
             user = new Usuari();
-            System.out.println(resultSet);
-            if (resultSet==null)return null;
             while (resultSet.next()) {
                 user.setId(resultSet.getInt("Id"));
                 user.setNom(resultSet.getString("Nom"));
@@ -54,6 +53,7 @@ public class DataAccess {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        if (user.getEmail()==null)return null;
         return user;
     }
 
