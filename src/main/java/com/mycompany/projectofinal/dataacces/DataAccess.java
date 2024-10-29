@@ -42,6 +42,8 @@ public class DataAccess {
             selectStatement.setString(1, email);
             ResultSet resultSet = selectStatement.executeQuery();
             user = new Usuari();
+            System.out.println(resultSet);
+            if (resultSet==null)return null;
             while (resultSet.next()) {
                 user.setId(resultSet.getInt("Id"));
                 user.setNom(resultSet.getString("Nom"));

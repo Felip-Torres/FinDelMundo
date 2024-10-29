@@ -4,6 +4,7 @@
  */
 package com.mycompany.projectofinal;
 
+import Logica.Logica;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.mycompany.projectofinal.TablasAbstractas.TablasIntentos;
 import com.mycompany.projectofinal.dataacces.DataAccess;
@@ -21,6 +22,8 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import javax.swing.table.TableRowSorter;
 
 
 /**
@@ -29,7 +32,9 @@ import java.net.URISyntaxException;
  */
 public class Main extends javax.swing.JFrame {
     private DataAccess da = new DataAccess();
-    private boolean logeado=false;
+    private boolean logeado=true;//Recuerda ponerlo ha falso
+    private TableRowSorter<TablasIntentos> sorter;
+    private Logica logica = new Logica();
 
     /**
      * Creates new form Main
@@ -202,6 +207,11 @@ public class Main extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTableIntentos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableIntentosMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTableIntentos);
 
         jLabelIntentos.setText("Intentos");
@@ -331,6 +341,16 @@ public class Main extends javax.swing.JFrame {
 
                 // Crear un modelo para la JTable
                 TablasIntentos model = new TablasIntentos(attempts);
+                
+                //IMPLEMENTACIÓ SORTER
+                sorter = new TableRowSorter<>(model);
+                jTableIntentos.setRowSorter(sorter);
+
+
+                // ORDENACIÓ X DEFECTE
+                List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+                sortKeys.add(new RowSorter.SortKey(0,SortOrder.ASCENDING)); // ordre desitjat;
+                sorter.setSortKeys(sortKeys);
 
                 
 
@@ -361,9 +381,13 @@ public class Main extends javax.swing.JFrame {
                 }
             }else{
                 JOptionPane.showMessageDialog(this, "Contraseña incorrecta");
+                logeado=false;
+                actualizarListas();
             }
         }else{
             JOptionPane.showMessageDialog(this, "Correo incorrecto");
+            logeado=false;
+            actualizarListas();
         }
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
@@ -379,6 +403,15 @@ public class Main extends javax.swing.JFrame {
             System.out.println("Algo fue mal");
         }        
     }//GEN-LAST:event_jLabelWebMouseClicked
+
+    private void jTableIntentosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableIntentosMouseClicked
+        // Obtener la fila y columna de la celda que fue clickeada
+        int row = jTableIntentos.rowAtPoint(evt.getPoint());
+        int column = jTableIntentos.columnAtPoint(evt.getPoint());
+        // Obtener el valor de la casilla seleccionada
+        Object casilla = jTableIntentos.getValueAt(row, column);
+        System.out.println("Clic en la celda en fila " + row + ", columna " + column + ": " + casilla);
+    }//GEN-LAST:event_jTableIntentosMouseClicked
 
     /**
      * @param args the command line arguments
