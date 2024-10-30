@@ -40,6 +40,7 @@ public class Main extends javax.swing.JFrame {
     private Logica logica = new Logica();
     private JFileChooser fc= new JFileChooser();
     private EmbeddedMediaPlayerComponent mp;
+    private TablasIntentos model;
 
     /**
      * Creates new form Main
@@ -51,6 +52,7 @@ public class Main extends javax.swing.JFrame {
         jLabelWeb.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         mp = new EmbeddedMediaPlayerComponent();
+        mp.setSize(jPanelVideo.getWidth(), jPanelVideo.getHeight());
         jPanelVideo.add(mp, BorderLayout.CENTER);
         
         
@@ -220,6 +222,11 @@ public class Main extends javax.swing.JFrame {
                 jTableIntentosMouseClicked(evt);
             }
         });
+        jTableIntentos.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jTableIntentosPropertyChange(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTableIntentos);
 
         jLabelIntentos.setText("Intentos");
@@ -348,7 +355,7 @@ public class Main extends javax.swing.JFrame {
                 ArrayList<Intent> attempts = da.getAttemptsPendingReview(selectedUser);
 
                 // Crear un modelo para la JTable
-                TablasIntentos model = new TablasIntentos(attempts);
+                model = new TablasIntentos(attempts);
                 
                 //IMPLEMENTACIÓ SORTER
                 sorter = new TableRowSorter<>(model);
@@ -360,10 +367,28 @@ public class Main extends javax.swing.JFrame {
                 sortKeys.add(new RowSorter.SortKey(0,SortOrder.ASCENDING)); // ordre desitjat;
                 sorter.setSortKeys(sortKeys);
 
-                
-
                 // Asignar el modelo a la JTable
                 jTableIntentos.setModel(model);
+                
+                // Seleccionar automáticamente la primera fila de la JTable
+                if (jTableIntentos.getRowCount() > 0) {
+                    jTableIntentos.changeSelection(0, 5, false, false);// Selecciona la primera fila y 5 columna que es la del video
+                    
+                    // Crear un MouseEvent ficticio para ejecutar el evento como si hubieras hecho clic en la celda
+                    java.awt.event.MouseEvent evtclick = new java.awt.event.MouseEvent(
+                        jTableIntentos,  // El componente que dispara el evento
+                        java.awt.event.MouseEvent.MOUSE_CLICKED,  // Tipo de evento
+                        System.currentTimeMillis(), // Tiempo actual
+                        0, // Modificadores del evento (ninguno en este caso)
+                        jTableIntentos.getCellRect(0, 5, true).x,  // Coordenada x de la celda
+                        jTableIntentos.getCellRect(0, 5, true).y,  // Coordenada y de la celda
+                        1,  // Número de clics
+                        false // No es un clic derecho
+                    );
+
+                    // Llamar al método que maneja el clic pasando el evento ficticio
+                    jTableIntentosMouseClicked(evtclick);
+                }
             }
         }   
     }//GEN-LAST:event_jListClientesValueChanged
@@ -416,8 +441,9 @@ public class Main extends javax.swing.JFrame {
         // Obtener la fila y columna de la celda que fue clickeada
         int row = jTableIntentos.rowAtPoint(evt.getPoint());
         int column = jTableIntentos.columnAtPoint(evt.getPoint());
-        // Obtener el valor de la casilla seleccionada
+        //Compruebo si es la columna del video
         if(column==5){
+            // Obtener el valor de la casilla seleccionada
             Object casilla = jTableIntentos.getValueAt(row, column);
             System.out.println(casilla);
             String path= "src/main/java/videos/" + casilla;
@@ -426,6 +452,10 @@ public class Main extends javax.swing.JFrame {
             
         }
     }//GEN-LAST:event_jTableIntentosMouseClicked
+
+    private void jTableIntentosPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTableIntentosPropertyChange
+    
+    }//GEN-LAST:event_jTableIntentosPropertyChange
 
     /**
      * @param args the command line arguments

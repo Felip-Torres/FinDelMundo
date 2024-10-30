@@ -62,4 +62,10 @@ public class TablasIntentos extends AbstractTableModel{
     public String getColumnName(int column) {
         return columnes[column]; // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
     }
+    
+    
+    public int getColumNum(String column){
+        for (int i=0; i<columnes.length;i++)if(columnes[i].equals(column))return i;
+        return -1;
+    }
 }
