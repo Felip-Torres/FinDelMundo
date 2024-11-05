@@ -11,18 +11,19 @@ import java.sql.Date;
  * @author Alumne
  */
 public class Intent {
-    private int id, idUsuari, idEjercicio;
+    private int id, idUsuari, idEjercicio, idReview;
     private Date Inici, Fi;
-    private String Videofile;
+    private String Videofile, Estado;
     
     public Intent(){
         
     }
 
-    public Intent(int id, int idUsuari, int idEjercicio, Date IniciDate, Date Fi, String Videofile) {
+    public Intent(int id, int idUsuari, int idEjercicio, int idReview, Date IniciDate, Date Fi, String Videofile) {
         this.id = id;
         this.idUsuari = idUsuari;
         this.idEjercicio = idEjercicio;
+        this.idReview = idReview;
         this.Inici = IniciDate;
         this.Fi = Fi;
         this.Videofile = Videofile;
@@ -50,6 +51,31 @@ public class Intent {
 
     public void setIdEjercicio(int idEjercicio) {
         this.idEjercicio = idEjercicio;
+    }
+
+    public int getIdReview() {
+        return idReview;
+    }
+
+    public void setIdReview(int idReview) {
+        this.idReview = idReview;
+    }
+
+    public String getEstado() {
+        return Estado;
+    }
+
+    public void setEstado(int val) {
+        if(idReview!=0){
+            if(val<3){
+                this.Estado="Suspendido";
+            }else{
+                this.Estado="Aprobado";
+            }
+        }else{
+            this.Estado="Pendiente";
+        }
+            
     }
 
     public Date getInici() {
@@ -82,7 +108,7 @@ public class Intent {
     }
     
     public String[] toArrayString() {
-        String[] st = new String[6];
+        String[] st = new String[8];
     
         // Convertimos los atributos a String y los asignamos al array
         st[0] = String.valueOf(id); 
@@ -91,6 +117,8 @@ public class Intent {
         st[3] = (Inici != null) ? Inici.toString() : "";
         st[4] = (Fi != null) ? Fi.toString() : "";
         st[5] = Videofile;
+        st[6] = String.valueOf(idReview); 
+        st[7] = Estado;
     
     return st;
 }

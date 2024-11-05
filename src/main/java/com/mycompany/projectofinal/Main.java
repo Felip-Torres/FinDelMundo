@@ -36,11 +36,13 @@ import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 public class Main extends javax.swing.JFrame {
     private DataAccess da = new DataAccess();
     private boolean logeado=true;//Recuerda ponerlo ha falso
+    private int IdUsuario;
     private TableRowSorter<TablasIntentos> sorter;
     private Logica logica = new Logica();
     private JFileChooser fc= new JFileChooser();
     private EmbeddedMediaPlayerComponent mp;
     private TablasIntentos model;
+    private boolean isPlaying;
 
     /**
      * Creates new form Main
@@ -48,16 +50,11 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         initlista();
+        initVideoPlayer();
+        initTabla();
         //getContentPane().setBackground(Color.decode("#10191B"));
         jLabelWeb.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
-        mp = new EmbeddedMediaPlayerComponent();
-        mp.setSize(jPanelVideo.getWidth(), jPanelVideo.getHeight());
-        jPanelVideo.add(mp, BorderLayout.CENTER);
-        
-        
     }
-    
     
     public void initlista(){
         ArrayList<Usuari> usuaris = da.getAllUsers();
@@ -69,9 +66,65 @@ public class Main extends javax.swing.JFrame {
         actualizarListas();
     }
     
+    public void initTabla(){
+        // Llamar al método que obtiene los intentos pendientes 
+        ArrayList<Intent> attempts = da.getAttemptsPendingReview();
+
+        // Crear un modelo para la JTable
+        model = new TablasIntentos(attempts);
+                
+        //IMPLEMENTACIÓ SORTER
+        sorter = new TableRowSorter<>(model);
+        jTableIntentos.setRowSorter(sorter);
+
+
+        // ORDENACIÓ X DEFECTE
+        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(0,SortOrder.ASCENDING)); // ordre desitjat;
+        sorter.setSortKeys(sortKeys);
+
+        // Asignar el modelo a la JTable
+        jTableIntentos.setModel(model);
+        TablasIntentos.configurarTabla(jTableIntentos);
+                
+        // Seleccionar automáticamente la primera fila de la JTable
+        if (jTableIntentos.getRowCount() > 0) {
+            jTableIntentos.changeSelection(0, 0, false, false);// Selecciona la primera fila
+            
+            playVideo(0, model);
+        }
+    }
+    
+    public void initVideoPlayer(){
+        mp = new EmbeddedMediaPlayerComponent();
+        mp.setSize(jPanelVideo.getWidth(), jPanelVideo.getHeight());
+        jPanelVideo.add(mp, BorderLayout.CENTER);
+    }
+    
+    public void playVideo(int row, TablasIntentos model){
+        Intent intento= model.getIntent(row);
+        String path= "src/main/java/videos/" + intento.getVideofile();
+
+        mp.mediaPlayer().media().play(path);
+        isPlaying = true;
+        jButtonPausa.setText("Pausar");
+    }
+    
     public void actualizarListas(){
         jPanelListas.setVisible(logeado);
     }
+    
+    // Método que maneja el evento de selección de fila en jTableIntentos
+        private void jTableIntentosSelectionChanged(javax.swing.event.ListSelectionEvent evt) {
+            // Asegurarse de que el evento no es parte de un ajuste final (para evitar llamadas dobles)
+            if (!evt.getValueIsAdjusting()) {
+                // Obtener la fila seleccionada
+                int row = jTableIntentos.getSelectedRow();
+
+                playVideo(row, model);
+                
+            }
+        }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -100,11 +153,9 @@ public class Main extends javax.swing.JFrame {
         jLabelIntentos = new javax.swing.JLabel();
         jLabelClientes = new javax.swing.JLabel();
         jPanelVideo = new javax.swing.JPanel();
+        jButtonPausa = new javax.swing.JButton();
         jLabelIcon = new javax.swing.JLabel();
         jLabelWeb = new javax.swing.JLabel();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu2 = new javax.swing.JMenu();
-        jMenu3 = new javax.swing.JMenu();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Login"));
 
@@ -244,8 +295,15 @@ public class Main extends javax.swing.JFrame {
         );
         jPanelVideoLayout.setVerticalGroup(
             jPanelVideoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 218, Short.MAX_VALUE)
+            .addGap(0, 197, Short.MAX_VALUE)
         );
+
+        jButtonPausa.setText("Pausar");
+        jButtonPausa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonPausaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelListasLayout = new javax.swing.GroupLayout(jPanelListas);
         jPanelListas.setLayout(jPanelListasLayout);
@@ -254,14 +312,22 @@ public class Main extends javax.swing.JFrame {
             .addGroup(jPanelListasLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelIntentos, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanelVideo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, 0))
+                    .addGroup(jPanelListasLayout.createSequentialGroup()
+                        .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanelVideo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanelListasLayout.createSequentialGroup()
+                                .addGroup(jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelIntentos, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 286, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelListasLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButtonPausa)))
+                .addContainerGap())
         );
         jPanelListasLayout.setVerticalGroup(
             jPanelListasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -276,6 +342,8 @@ public class Main extends javax.swing.JFrame {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanelVideo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonPausa)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -303,14 +371,6 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        jMenu2.setText("File");
-        jMenuBar1.add(jMenu2);
-
-        jMenu3.setText("Edit");
-        jMenuBar1.add(jMenu3);
-
-        setJMenuBar(jMenuBar1);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -332,12 +392,12 @@ public class Main extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanelListas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
                     .addComponent(jLabelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1)
                     .addComponent(jLabelWeb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -352,7 +412,7 @@ public class Main extends javax.swing.JFrame {
             // Verificar que se haya seleccionado un elemento
             if (selectedUser != null) {
                 // Llamar al método que obtiene los intentos pendientes del usuario seleccionado
-                ArrayList<Intent> attempts = da.getAttemptsPendingReview(selectedUser);
+                ArrayList<Intent> attempts = da.getReviews(selectedUser);
 
                 // Crear un modelo para la JTable
                 model = new TablasIntentos(attempts);
@@ -374,20 +434,7 @@ public class Main extends javax.swing.JFrame {
                 if (jTableIntentos.getRowCount() > 0) {
                     jTableIntentos.changeSelection(0, 5, false, false);// Selecciona la primera fila y 5 columna que es la del video
                     
-                    // Crear un MouseEvent ficticio para ejecutar el evento como si hubieras hecho clic en la celda
-                    java.awt.event.MouseEvent evtclick = new java.awt.event.MouseEvent(
-                        jTableIntentos,  // El componente que dispara el evento
-                        java.awt.event.MouseEvent.MOUSE_CLICKED,  // Tipo de evento
-                        System.currentTimeMillis(), // Tiempo actual
-                        0, // Modificadores del evento (ninguno en este caso)
-                        jTableIntentos.getCellRect(0, 5, true).x,  // Coordenada x de la celda
-                        jTableIntentos.getCellRect(0, 5, true).y,  // Coordenada y de la celda
-                        1,  // Número de clics
-                        false // No es un clic derecho
-                    );
-
-                    // Llamar al método que maneja el clic pasando el evento ficticio
-                    jTableIntentosMouseClicked(evtclick);
+                    playVideo(0, model);
                 }
             }
         }   
@@ -407,6 +454,8 @@ public class Main extends javax.swing.JFrame {
                 if(user.isInstructor()){
                     logeado=true;
                     actualizarListas();
+                    initTabla();
+                    IdUsuario=user.getId();
                     JOptionPane.showMessageDialog(this, "Logeado instructor: "+ user.getNom());
                     jDialog1.dispose();
                 }else{
@@ -440,22 +489,27 @@ public class Main extends javax.swing.JFrame {
     private void jTableIntentosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableIntentosMouseClicked
         // Obtener la fila y columna de la celda que fue clickeada
         int row = jTableIntentos.rowAtPoint(evt.getPoint());
-        int column = jTableIntentos.columnAtPoint(evt.getPoint());
-        //Compruebo si es la columna del video
-        if(column==5){
-            // Obtener el valor de la casilla seleccionada
-            Object casilla = jTableIntentos.getValueAt(row, column);
-            System.out.println(casilla);
-            String path= "src/main/java/videos/" + casilla;
-
-            mp.mediaPlayer().media().play(path);
+        
+        playVideo(row, model);
             
-        }
+        
     }//GEN-LAST:event_jTableIntentosMouseClicked
 
     private void jTableIntentosPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTableIntentosPropertyChange
     
     }//GEN-LAST:event_jTableIntentosPropertyChange
+
+    private void jButtonPausaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPausaActionPerformed
+        if (isPlaying){
+            mp.mediaPlayer().controls().pause();
+            isPlaying = false;
+            jButtonPausa.setText("Despausar");
+        }else{
+            mp.mediaPlayer().controls().start();
+            isPlaying = true;
+            jButtonPausa.setText("Pausar");
+        }
+    }//GEN-LAST:event_jButtonPausaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -496,6 +550,7 @@ public class Main extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonLogin;
+    private javax.swing.JButton jButtonPausa;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabelClientes;
     private javax.swing.JLabel jLabelContra;
@@ -505,9 +560,6 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelWeb;
     private javax.swing.JList<String> jListClientes;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanelListas;

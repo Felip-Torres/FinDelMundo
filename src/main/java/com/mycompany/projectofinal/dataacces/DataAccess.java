@@ -97,12 +97,43 @@ public class DataAccess {
         return 0;
     }
 
-    public ArrayList<Intent> getAttemptsPendingReview(String nom) {
+    public ArrayList<Intent> getAttemptsPendingReview() {
         ArrayList<Intent> intents = new ArrayList<>();
-        String sql = "SELECT * FROM Intents INNER JOIN Usuaris ON Intents.IdUsuari=Usuaris.Id"
-                + " INNER JOIN Exercicis ON Intents.IdExercici=Exercicis.Id"
-                + " WHERE Intents.Id NOT IN (SELECT IdIntent FROM Review)"
-                + " and Nom=?"
+        String sql = "SELECT i.Id as Id, IdUsuari, IdExercici, Timestamp_Inici, Timestamp_Fi, VideoFile, r.Id as IdReview, Valoracio FROM Intents i"
+                + " INNER JOIN Usuaris u ON i.IdUsuari=u.Id"
+                + " INNER JOIN Exercicis e ON i.IdExercici=e.Id"
+                + " LEFT JOIN Review r ON i.Id=r.IdIntent"
+                + " WHERE i.Id NOT IN (SELECT IdIntent FROM Review)"
+                + " ORDER BY Timestamp_Inici";
+        try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
+
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Intent attempt = new Intent();
+                attempt.setId(resultSet.getInt("Id"));
+                attempt.setIdUsuari(resultSet.getInt("IdUsuari"));
+                attempt.setIdEjercicio(resultSet.getInt("IdExercici"));
+                attempt.setInici(resultSet.getDate("Timestamp_Inici"));
+                attempt.setFi(resultSet.getDate("Timestamp_Fi"));
+                attempt.setVideofile(resultSet.getString("VideoFile"));
+                attempt.setIdReview(resultSet.getInt("IdReview"));
+                attempt.setEstado(resultSet.getInt("Valoracio"));
+                intents.add(attempt);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return intents;
+    }
+    
+    public ArrayList<Intent> getReviews(String nom) {
+        ArrayList<Intent> intents = new ArrayList<>();
+        String sql = "SELECT i.Id as Id, IdUsuari, IdExercici, Timestamp_Inici, Timestamp_Fi, VideoFile, r.Id as IdReview, Valoracio  FROM Intents i"
+                + " INNER JOIN Usuaris u ON i.IdUsuari=u.Id"
+                + " INNER JOIN Exercicis e ON i.IdExercici=e.Id"
+                + " LEFT JOIN Review r ON i.Id=r.IdIntent"
+                + " WHERE nom=?"
                 + " ORDER BY Timestamp_Inici";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
 
@@ -117,6 +148,8 @@ public class DataAccess {
                 attempt.setInici(resultSet.getDate("Timestamp_Inici"));
                 attempt.setFi(resultSet.getDate("Timestamp_Fi"));
                 attempt.setVideofile(resultSet.getString("VideoFile"));
+                attempt.setIdReview(resultSet.getInt("IdReview"));
+                attempt.setEstado(resultSet.getInt("Valoracio"));
                 intents.add(attempt);
             }
         } catch (SQLException e) {
