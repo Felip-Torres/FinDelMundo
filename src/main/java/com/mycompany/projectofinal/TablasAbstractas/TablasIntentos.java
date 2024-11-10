@@ -82,7 +82,7 @@ public class TablasIntentos extends AbstractTableModel{
             String estado = (String) model.getValueAt(row, model.getColumNum("Estado"));
 
             // Configurar el color de fondo según el estado
-            if (!isSelected) { // Solo cambiar color si no está seleccionada
+            if (!isSelected) {
                 switch (estado) {
                     case "Aprobado" -> cell.setBackground(new Color(100, 255, 100)); // Verde 
                     case "Suspendido" -> cell.setBackground(new Color(255, 100, 100)); // Rojo 

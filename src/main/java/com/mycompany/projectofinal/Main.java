@@ -4,7 +4,6 @@
  */
 package com.mycompany.projectofinal;
 
-import Logica.Logica;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.mycompany.projectofinal.TablasAbstractas.TablasIntentos;
 import com.mycompany.projectofinal.dataacces.DataAccess;
@@ -14,11 +13,8 @@ import com.mycompany.projectofinal.dto.Usuari;
 import java.awt.BorderLayout;
 import java.io.File;
 
-import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.io.IOException;
@@ -26,8 +22,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import javax.swing.table.TableRowSorter;
-import uk.co.caprica.vlcj.player.base.MediaPlayer;
-import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 /**
@@ -35,13 +29,13 @@ import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
  * @author Alumne
  */
 public class Main extends javax.swing.JFrame {
-    private DataAccess da = new DataAccess();
-    private boolean logeado=false;//Recuerda ponerlo ha falso
-    private int IdUsuario;
-    private int IdIntento;
+    private final DataAccess da = new DataAccess();
+    private boolean logeado=false;
+    private int IdUsuario;//Guardara el id del usuario logeado
+    private int IdIntento;//Guardara el id del intento seleccionado
+    private String usuarioSeleccionado;//Guardara el nombre del usuario seleccionado
+    
     private TableRowSorter<TablasIntentos> sorter;
-    private Logica logica = new Logica();
-    private JFileChooser fc= new JFileChooser();
     private EmbeddedMediaPlayerComponent mp;
     private TablasIntentos model;
     private boolean isPlaying;
@@ -53,13 +47,15 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         initlista();
         initVideoPlayer();
-        //getContentPane().setBackground(Color.decode("#10191B"));
-        jLabelWeb.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
+        jLabelWeb.setCursor(new Cursor(Cursor.HAND_CURSOR));//Cambia el cursor a la mano cuando esta encima del enlace
+        
+        //Estos botones seran visibles dependiendo de si el intento tiene review o no.
         jButtonModificar.setVisible(false);
         jButtonEscribir.setVisible(false);
     }
     
+    //Inicia el componente lista con los nombres de los usuarios
     public void initlista(){
         ArrayList<Usuari> usuaris = da.getUsuarios();
         DefaultListModel dlm = new DefaultListModel();
@@ -67,9 +63,10 @@ public class Main extends javax.swing.JFrame {
             dlm.addElement(user.getNom());
         }
         jListClientes.setModel(dlm);
-        actualizarListas();
+        actualizarPanel();
     }
     
+    //Inicia el componente jTableIntentos con los intento sin review de todos los usuarios
     public void initTabla(){
         // Llamar al método que obtiene los intentos pendientes 
         ArrayList<Intent> attempts = da.getIntentosSinReview();
@@ -99,12 +96,14 @@ public class Main extends javax.swing.JFrame {
         }
     }
     
+    //Inicia el componente mp
     public void initVideoPlayer(){
         mp = new EmbeddedMediaPlayerComponent();
         mp.setSize(jPanelVideo.getWidth(), jPanelVideo.getHeight());
         jPanelVideo.add(mp, BorderLayout.CENTER);
     }
     
+    //Ejecuta el video el intento
     public void playVideo(int row, TablasIntentos model){
         Intent intento= model.getIntent(row);
         String path= "src/main/java/videos/" + intento.getVideofile();
@@ -114,8 +113,30 @@ public class Main extends javax.swing.JFrame {
         jButtonPausa.setText("Pausar");
     }
     
-    public void actualizarListas(){
+    //Muestra o oculta el panel dependiendo del logeo
+    public void actualizarPanel(){
         jPanelListas.setVisible(logeado);
+    }
+    
+    
+    private void recargarTabla() {
+        // Obtener los intentos actualizados del usuario seleccionado
+        ArrayList<Intent> attempts = da.getIntentosDeUsuario(usuarioSeleccionado);
+
+        //Crear un nuevo modelo con los datos actualizados
+        model = new TablasIntentos(attempts);
+
+        //IMPLEMENTACIÓ SORTER
+        sorter = new TableRowSorter<>(model);
+        jTableIntentos.setRowSorter(sorter);
+
+        //ORDENACION X DEFECTO
+        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+        sorter.setSortKeys(sortKeys);
+
+        // Asignar el modelo actualizado a la JTable
+        jTableIntentos.setModel(model);
     }
         
     /**
@@ -159,6 +180,10 @@ public class Main extends javax.swing.JFrame {
         jLabelEliminar = new javax.swing.JLabel();
         jButtonAceptar = new javax.swing.JButton();
         jButtonCancelar = new javax.swing.JButton();
+        jDialogAbout = new javax.swing.JDialog();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jButton1 = new javax.swing.JButton();
         jButtonInicio = new javax.swing.JButton();
         jPanelListas = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -174,6 +199,11 @@ public class Main extends javax.swing.JFrame {
         jButtonEscribir = new javax.swing.JButton();
         jLabelIcon = new javax.swing.JLabel();
         jLabelWeb = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu2 = new javax.swing.JMenu();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Login"));
 
@@ -465,6 +495,44 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
+        jScrollPane5.setEnabled(false);
+        jScrollPane5.setFocusable(false);
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setText("Autor: Felip Torres Reines\n\n\nLogo generado con chatgpt");
+        jTextArea1.setFocusable(false);
+        jScrollPane5.setViewportView(jTextArea1);
+
+        jButton1.setText("Aceptar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jDialogAboutLayout = new javax.swing.GroupLayout(jDialogAbout.getContentPane());
+        jDialogAbout.getContentPane().setLayout(jDialogAboutLayout);
+        jDialogAboutLayout.setHorizontalGroup(
+            jDialogAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialogAboutLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialogAboutLayout.createSequentialGroup()
+                .addContainerGap(149, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
+        );
+        jDialogAboutLayout.setVerticalGroup(
+            jDialogAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogAboutLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setForeground(java.awt.Color.white);
@@ -633,6 +701,27 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        jMenu2.setText("File");
+
+        jMenu4.setText(" Exit and Help");
+
+        jMenuItem2.setText("About");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem2);
+
+        jMenu2.add(jMenu4);
+
+        jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Edit");
+        jMenuBar1.add(jMenu3);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -666,32 +755,16 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    //Seleccion de alguien en la lista
     private void jListClientesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListClientesValueChanged
          // Verifica que el evento no sea un ajuste final de la selección
         if (!evt.getValueIsAdjusting()) {
             // Obtener el valor seleccionado de jList1
-            String selectedUser = (String) jListClientes.getSelectedValue();
+            usuarioSeleccionado = (String) jListClientes.getSelectedValue();
 
             // Verificar que se haya seleccionado un elemento
-            if (selectedUser != null) {
-                // Llamar al método que obtiene los intentos pendientes del usuario seleccionado
-                ArrayList<Intent> attempts = da.getIntentosDeUsuario(selectedUser);
-
-                // Crear un modelo para la JTable
-                model = new TablasIntentos(attempts);
-                
-                //IMPLEMENTACIÓ SORTER
-                sorter = new TableRowSorter<>(model);
-                jTableIntentos.setRowSorter(sorter);
-
-
-                // ORDENACIÓ X DEFECTE
-                List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-                sortKeys.add(new RowSorter.SortKey(0,SortOrder.ASCENDING)); // ordre desitjat;
-                sorter.setSortKeys(sortKeys);
-
-                // Asignar el modelo a la JTable
-                jTableIntentos.setModel(model);
+            if (usuarioSeleccionado != null) {
+                recargarTabla();
                 
                 // Seleccionar automáticamente la primera fila de la JTable
                 if (jTableIntentos.getRowCount() > 0) {
@@ -707,47 +780,55 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldEmailActionPerformed
 
+    //Boton del modal de login
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
         Usuari user= da.getUsuario(jTextFieldEmail.getText());
+        //Compruebo que este registrado
         if (user != null){
+            //Compruebo la contraseña
             char[] passToVery=jPasswordField.getPassword();
             String passString=user.getPasswordHash();
             var result = BCrypt.verifyer().verify(passToVery, passString);
             if(result.verified){
+                //Compruebo si es instructor
                 if(user.isInstructor()){
+                    //Logeado a true y muestro todo lo que debe ver un instructor
                     logeado=true;
-                    actualizarListas();
+                    actualizarPanel();
                     initTabla();
                     IdUsuario=user.getId();
                     JOptionPane.showMessageDialog(this, "Logeado instructor: "+ user.getNom());
                     jButtonInicio.setText("Sing out");
                     jDialogInicio.dispose();
-                }else{
+                }else{//Es un usuario normal, lo cual aun no hay que implementar
                     JOptionPane.showMessageDialog(this, "Logeado usuario: "+ user.getNom()+" De momento sin implementar");
                 }
             }else{
                 JOptionPane.showMessageDialog(this, "Contraseña incorrecta");
                 logeado=false;
-                actualizarListas();
+                actualizarPanel();
             }
         }else{
             JOptionPane.showMessageDialog(this, "Correo incorrecto");
             logeado=false;
-            actualizarListas();
+            actualizarPanel();
         }
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
+    
+    //Boton de login y sing out 
     private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
-        if (logeado){
+        if (logeado){//Si esta logeado deslogea y actualiza al estado inicial
             logeado=false;
-            actualizarListas();
+            actualizarPanel();
             jButtonInicio.setText("Login");
-        }else{
+        }else{//Si no esta logeado abre el modal para logearte
             jDialogInicio.pack();
             jDialogInicio.setVisible(true);  
         }
     }//GEN-LAST:event_jButtonInicioActionPerformed
 
+    //Hace que la url de la web funcione
     private void jLabelWebMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelWebMouseClicked
         try {
             Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"));
@@ -756,18 +837,25 @@ public class Main extends javax.swing.JFrame {
         }        
     }//GEN-LAST:event_jLabelWebMouseClicked
 
+    //Contola la seccion de un intento
     private void jTableIntentosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableIntentosMouseClicked
         // Obtener la fila y columna de la celda que fue clickeada
         int row = jTableIntentos.rowAtPoint(evt.getPoint());
         
+        //Ejecuta el video
         playVideo(row, model);
             
+        //Coge el id del intento seleccionado
         IdIntento = (int)jTableIntentos.getValueAt(row, 0);
+        
+        //Coge el estado
         String estado=jTableIntentos.getValueAt(row, 3).toString();
+        
+        //Si el estado es pendiente muestra el boton para escribir una review
         if (estado.equals("Pendiente")){
             jButtonModificar.setVisible(false);
             jButtonEscribir.setVisible(true);
-        }else{
+        }else{//de lo contrario muestra el de editar
             jButtonEscribir.setVisible(false);
             jButtonModificar.setVisible(true);
         }
@@ -778,6 +866,7 @@ public class Main extends javax.swing.JFrame {
     
     }//GEN-LAST:event_jTableIntentosPropertyChange
 
+    //Controla el pause y despause del video
     private void jButtonPausaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPausaActionPerformed
         if (isPlaying){
             mp.mediaPlayer().controls().pause();
@@ -790,12 +879,14 @@ public class Main extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonPausaActionPerformed
 
+    //Crea modal Escribir review
     private void jButtonEscribirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEscribirActionPerformed
         jLabelID.setText("ID: "+IdIntento+" (Intento seleccionado)");
         jDialogEscribir.pack();
         jDialogEscribir.setVisible(true);  
     }//GEN-LAST:event_jButtonEscribirActionPerformed
-
+ 
+    //Crea modal Editar con los datos actuales de la review
     private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
         jLabelID1.setText("ID: "+IdIntento+" (Intento seleccionado)");
         Review rev=da.getReview(IdIntento);
@@ -805,38 +896,54 @@ public class Main extends javax.swing.JFrame {
         jDialogEditar.setVisible(true);  
     }//GEN-LAST:event_jButtonModificarActionPerformed
 
+    //Crea modal Eliminar
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
         jLabelEliminar.setText("<html> Estas seguro que quieres  <br>eliminar el intento "+IdIntento+"? </html>");
         jDialogEliminar.pack();
         jDialogEliminar.setVisible(true);  
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 
+    //Escribir la review
     private void jButtonEscribir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEscribir1ActionPerformed
         int Valoracion = (int) jSpinnerValoracion.getValue();
         String comentario = jTextAreaComentario.getText();
         da.insertReview(IdIntento, IdUsuario, Valoracion, comentario);
-        jTableIntentos.repaint();
+        if (usuarioSeleccionado != null) recargarTabla();else initTabla();
         jDialogEscribir.dispose();
     }//GEN-LAST:event_jButtonEscribir1ActionPerformed
 
+    //Aceptar la eliminacion
     private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAceptarActionPerformed
         da.eliminarIntento(IdIntento);
+        if (usuarioSeleccionado != null) recargarTabla();else initTabla();
         jDialogEliminar.dispose();
-        jTableIntentos.repaint();
     }//GEN-LAST:event_jButtonAceptarActionPerformed
-
+    
+    //Editar la review
     private void jButtonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditarActionPerformed
         Review rev=da.getReview(IdIntento);
         int Valoracion = (int) jSpinnerValoracionEditar.getValue();
         String comentario = jTextAreaComentarioEditar.getText();
         da.updateReview(rev.getId(), Valoracion, comentario);
-        jTableIntentos.repaint();
+        recargarTabla();
         jDialogEditar.dispose();
     }//GEN-LAST:event_jButtonEditarActionPerformed
 
+    //Cancelar la eliminacion
     private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
         jDialogEliminar.dispose();
     }//GEN-LAST:event_jButtonCancelarActionPerformed
+
+    //Genera about
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        jDialogAbout.pack();
+        jDialogAbout.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    //Cierra about
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        jDialogAbout.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -875,6 +982,7 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonAceptar;
     private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonEditar;
@@ -885,6 +993,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton jButtonLogin;
     private javax.swing.JButton jButtonModificar;
     private javax.swing.JButton jButtonPausa;
+    private javax.swing.JDialog jDialogAbout;
     private javax.swing.JDialog jDialogEditar;
     private javax.swing.JDialog jDialogEliminar;
     private javax.swing.JDialog jDialogEscribir;
@@ -904,7 +1013,12 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelWeb;
     private javax.swing.JList<String> jListClientes;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
@@ -916,9 +1030,11 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSpinner jSpinnerValoracion;
     private javax.swing.JSpinner jSpinnerValoracionEditar;
     private javax.swing.JTable jTableIntentos;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextAreaComentario;
     private javax.swing.JTextArea jTextAreaComentarioEditar;
     private javax.swing.JTextField jTextFieldEmail;

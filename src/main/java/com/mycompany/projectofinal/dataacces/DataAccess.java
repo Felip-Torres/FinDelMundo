@@ -24,7 +24,6 @@ import java.util.logging.Logger;
  * @author Miguel
  */
 public class DataAccess {
-
     private Connection getConnection(){
         Properties properties=new Properties();
         try {
@@ -34,7 +33,7 @@ public class DataAccess {
         }
 
         Connection connection=null;
-        String coString="jdbc:sqlserver://localhost;database=simulapdb202315101357;encrypt=true;trustServerCertificate=true;";
+        String coString="jdbc:sqlserver://localhost;database=simulapdb202315101357;";
         try {
              connection=DriverManager.getConnection(coString, properties);
         } catch (SQLException ex) {
@@ -44,9 +43,10 @@ public class DataAccess {
         return connection;
     }
 
+    //Devuelve el usuario con el email indicado
     public Usuari getUsuario(String email) {
         Usuari user = null;
-        if(email.equals(""))return null;
+        if(email.equals(""))return null;//Si el email esta vacio devuelve null, esto evita un error
         String sql = "SELECT * FROM Usuaris WHERE Email = ?";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
             selectStatement.setString(1, email);
@@ -62,10 +62,11 @@ public class DataAccess {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if (user.getEmail()==null)return null;
+        if (user.getEmail()==null)return null;//Si el usuario devuelto no tiene email, es porque el email introducido no existe en la base de datos
         return user;
     }
 
+    //Devuelve los usuarios que no son instructor
     public ArrayList<Usuari> getUsuarios() {
         ArrayList<Usuari> usuaris = new ArrayList<>();
         String sql = "SELECT * FROM Usuaris WHERE IsInstructor=0";
@@ -88,6 +89,7 @@ public class DataAccess {
         return usuaris;
     }
 
+    //Devuelve los intentos sin review de todos los usuarios
     public ArrayList<Intent> getIntentosSinReview() {
         ArrayList<Intent> intents = new ArrayList<>();
         String sql = "SELECT i.Id as Id, IdUsuari, IdExercici, Timestamp_Inici, Timestamp_Fi, VideoFile, r.Id as IdReview, Valoracio FROM Intents i"
@@ -118,6 +120,7 @@ public class DataAccess {
         return intents;
     }
     
+    //Devuelve los intentos de un usuario
     public ArrayList<Intent> getIntentosDeUsuario(String nom) {
         ArrayList<Intent> intents = new ArrayList<>();
         String sql = "SELECT i.Id as Id, IdUsuari, IdExercici, Timestamp_Inici, Timestamp_Fi, VideoFile, r.Id as IdReview, Valoracio  FROM Intents i"
@@ -149,19 +152,31 @@ public class DataAccess {
         return intents;
     }
     
+    //Elimina un intento
     public void eliminarIntento(int idIntent) {
-        String sql = "DELETE FROM Intents WHERE Id = ?";
+        //Para eliminar un intento primero hay que eliminar sus reviews
+        String sql = "DELETE FROM Review WHERE IdIntent = ?";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
             selectStatement.setInt(1, idIntent);
-            ResultSet resultSet = selectStatement.executeQuery();
+            selectStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        //Ahora puedo eliminar el intento
+        sql = "DELETE FROM Intents WHERE Id = ?";
+        try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
+            selectStatement.setInt(1, idIntent);
+            selectStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    //Inserto una review
     public int insertReview(int IdIntent, int IdReviewer, int Valoracio, String Comentari) {
-        int result = 0;
-        String sql = "INSERT INTO dbo.Review (IdIntent, IdReviewer, Valoracio, Comentari)"
+        int id = 0;//Devolvera el id de la review generara, en un principio no lo necesito, pero lo dejo para un posible futuro.
+        String sql = "INSERT INTO Review (IdIntent, IdReviewer, Valoracio, Comentari)"
                 + " VALUES (?,?,?,?)";
         try (Connection conn = getConnection(); PreparedStatement insertStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             insertStatement.setInt(1, IdIntent);
@@ -169,7 +184,7 @@ public class DataAccess {
             insertStatement.setInt(3, Valoracio);
             insertStatement.setString(4, Comentari);
 
-            result = insertStatement.executeUpdate();
+            int result = insertStatement.executeUpdate();
             if (result == 0) {
                 throw new SQLException("Creating review failed, no rows affected.");
             }
@@ -177,7 +192,7 @@ public class DataAccess {
             try (ResultSet generatedKeys = insertStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     Long longResult = generatedKeys.getLong(1);
-                    result = longResult.intValue();
+                    id = longResult.intValue();
                 } else {
                     throw new SQLException("Creating review failed, no ID obtained.");
                 }
@@ -185,9 +200,10 @@ public class DataAccess {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return result;
+        return id;
     }
 
+    //Devuelve la review del intento
     public Review getReview(int idIntent) {
         Review review = null;
         String sql = "SELECT * FROM Review WHERE IdIntent = ?";
@@ -208,15 +224,15 @@ public class DataAccess {
         return review;
     }
     
+    //Actualiza la review del intento
     public void updateReview(int Id, int Valoracio, String Comentari) {
-        int result = 0;
         String sql = "UPDATE Review SET Valoracio=?, Comentari=? WHERE Id=?";
         try (Connection conn = getConnection(); PreparedStatement updateStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             updateStatement.setInt(1, Valoracio);
             updateStatement.setString(2, Comentari);
             updateStatement.setInt(3, Id);
 
-            result = updateStatement.executeUpdate();
+            int result = updateStatement.executeUpdate();
             if (result == 0) {
                 throw new SQLException("Error en la actualizacion");
             }
