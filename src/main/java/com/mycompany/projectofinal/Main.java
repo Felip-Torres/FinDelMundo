@@ -9,6 +9,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.mycompany.projectofinal.TablasAbstractas.TablasIntentos;
 import com.mycompany.projectofinal.dataacces.DataAccess;
 import com.mycompany.projectofinal.dto.Intent;
+import com.mycompany.projectofinal.dto.Review;
 import com.mycompany.projectofinal.dto.Usuari;
 import java.awt.BorderLayout;
 import java.io.File;
@@ -35,8 +36,9 @@ import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
  */
 public class Main extends javax.swing.JFrame {
     private DataAccess da = new DataAccess();
-    private boolean logeado=true;//Recuerda ponerlo ha falso
+    private boolean logeado=false;//Recuerda ponerlo ha falso
     private int IdUsuario;
+    private int IdIntento;
     private TableRowSorter<TablasIntentos> sorter;
     private Logica logica = new Logica();
     private JFileChooser fc= new JFileChooser();
@@ -51,7 +53,6 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         initlista();
         initVideoPlayer();
-        initTabla();
         //getContentPane().setBackground(Color.decode("#10191B"));
         jLabelWeb.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
@@ -60,7 +61,7 @@ public class Main extends javax.swing.JFrame {
     }
     
     public void initlista(){
-        ArrayList<Usuari> usuaris = da.getAllUsers();
+        ArrayList<Usuari> usuaris = da.getUsuarios();
         DefaultListModel dlm = new DefaultListModel();
         for (Usuari user: usuaris){
             dlm.addElement(user.getNom());
@@ -71,7 +72,7 @@ public class Main extends javax.swing.JFrame {
     
     public void initTabla(){
         // Llamar al método que obtiene los intentos pendientes 
-        ArrayList<Intent> attempts = da.getAttemptsPendingReview();
+        ArrayList<Intent> attempts = da.getIntentosSinReview();
 
         // Crear un modelo para la JTable
         model = new TablasIntentos(attempts);
@@ -143,19 +144,21 @@ public class Main extends javax.swing.JFrame {
         jTextAreaComentario = new javax.swing.JTextArea();
         jLabelValoracion1 = new javax.swing.JLabel();
         jSpinnerValoracion = new javax.swing.JSpinner();
+        jLabelID = new javax.swing.JLabel();
         jDialogEditar = new javax.swing.JDialog();
         jPanel5 = new javax.swing.JPanel();
         jLabelValoracion2 = new javax.swing.JLabel();
         jButtonEditar = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTextAreaComentario1 = new javax.swing.JTextArea();
+        jTextAreaComentarioEditar = new javax.swing.JTextArea();
         jLabelValoracion3 = new javax.swing.JLabel();
-        jSpinnerValoracion1 = new javax.swing.JSpinner();
+        jSpinnerValoracionEditar = new javax.swing.JSpinner();
+        jLabelID1 = new javax.swing.JLabel();
         jDialogEliminar = new javax.swing.JDialog();
         jPanel4 = new javax.swing.JPanel();
-        jLabelEmail3 = new javax.swing.JLabel();
-        jTextFieldEmail3 = new javax.swing.JTextField();
-        jButtonLogin3 = new javax.swing.JButton();
+        jLabelEliminar = new javax.swing.JLabel();
+        jButtonAceptar = new javax.swing.JButton();
+        jButtonCancelar = new javax.swing.JButton();
         jButtonInicio = new javax.swing.JButton();
         jPanelListas = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -267,27 +270,36 @@ public class Main extends javax.swing.JFrame {
 
         jSpinnerValoracion.setModel(new javax.swing.SpinnerNumberModel(0, 0, 5, 1));
 
+        jLabelID.setText("ID: x (Intento seleccionado)");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButtonEscribir1)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabelValoracion, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelValoracion1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSpinnerValoracion, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jButtonEscribir1)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabelValoracion, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelValoracion1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jSpinnerValoracion, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(jLabelID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelID)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelValoracion)
                     .addComponent(jSpinnerValoracion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -297,7 +309,7 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jLabelValoracion1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonEscribir1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jDialogEscribirLayout = new javax.swing.GroupLayout(jDialogEscribir.getContentPane());
@@ -321,20 +333,22 @@ public class Main extends javax.swing.JFrame {
 
         jLabelValoracion2.setText("Valoracion");
 
-        jButtonEditar.setText("Subir");
+        jButtonEditar.setText("Editar");
         jButtonEditar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonEditarActionPerformed(evt);
             }
         });
 
-        jTextAreaComentario1.setColumns(20);
-        jTextAreaComentario1.setRows(5);
-        jScrollPane4.setViewportView(jTextAreaComentario1);
+        jTextAreaComentarioEditar.setColumns(20);
+        jTextAreaComentarioEditar.setRows(5);
+        jScrollPane4.setViewportView(jTextAreaComentarioEditar);
 
         jLabelValoracion3.setText("Comentario");
 
-        jSpinnerValoracion1.setModel(new javax.swing.SpinnerNumberModel(0, 0, 5, 1));
+        jSpinnerValoracionEditar.setModel(new javax.swing.SpinnerNumberModel(0, 0, 5, 1));
+
+        jLabelID1.setText("ID: x (Intento seleccionado)");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -342,31 +356,38 @@ public class Main extends javax.swing.JFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButtonEditar)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabelValoracion2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelValoracion3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSpinnerValoracion1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jButtonEditar)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabelValoracion2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelValoracion3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jSpinnerValoracionEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(jLabelID1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelID1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelValoracion2)
-                    .addComponent(jSpinnerValoracion1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jSpinnerValoracionEditar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelValoracion3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonEditar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jDialogEditarLayout = new javax.swing.GroupLayout(jDialogEditar.getContentPane());
@@ -381,25 +402,27 @@ public class Main extends javax.swing.JFrame {
             jDialogEditarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jDialogEditarLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jDialogEliminar.setModalityType(java.awt.Dialog.ModalityType.TOOLKIT_MODAL);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Eliminar Intento"));
 
-        jLabelEmail3.setText("Id");
+        jLabelEliminar.setText("<html> Estas seguro que quieres  <br>eliminar el intento x? </html>");
 
-        jTextFieldEmail3.addActionListener(new java.awt.event.ActionListener() {
+        jButtonAceptar.setText("Aceptar");
+        jButtonAceptar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldEmail3ActionPerformed(evt);
+                jButtonAceptarActionPerformed(evt);
             }
         });
 
-        jButtonLogin3.setText("Iniciar");
-        jButtonLogin3.addActionListener(new java.awt.event.ActionListener() {
+        jButtonCancelar.setText("Cancelar");
+        jButtonCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonLogin3ActionPerformed(evt);
+                jButtonCancelarActionPerformed(evt);
             }
         });
 
@@ -407,26 +430,24 @@ public class Main extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabelEmail3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldEmail3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonLogin3)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabelEliminar)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jButtonAceptar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonCancelar)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jLabelEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelEmail3)
-                    .addComponent(jTextFieldEmail3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonLogin3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButtonAceptar)
+                    .addComponent(jButtonCancelar)))
         );
 
         javax.swing.GroupLayout jDialogEliminarLayout = new javax.swing.GroupLayout(jDialogEliminar.getContentPane());
@@ -434,14 +455,14 @@ public class Main extends javax.swing.JFrame {
         jDialogEliminarLayout.setHorizontalGroup(
             jDialogEliminarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jDialogEliminarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jDialogEliminarLayout.setVerticalGroup(
             jDialogEliminarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jDialogEliminarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -654,7 +675,7 @@ public class Main extends javax.swing.JFrame {
             // Verificar que se haya seleccionado un elemento
             if (selectedUser != null) {
                 // Llamar al método que obtiene los intentos pendientes del usuario seleccionado
-                ArrayList<Intent> attempts = da.getReviews(selectedUser);
+                ArrayList<Intent> attempts = da.getIntentosDeUsuario(selectedUser);
 
                 // Crear un modelo para la JTable
                 model = new TablasIntentos(attempts);
@@ -687,7 +708,7 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldEmailActionPerformed
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        Usuari user= da.getUser(jTextFieldEmail.getText());
+        Usuari user= da.getUsuario(jTextFieldEmail.getText());
         if (user != null){
             char[] passToVery=jPasswordField.getPassword();
             String passString=user.getPasswordHash();
@@ -699,6 +720,7 @@ public class Main extends javax.swing.JFrame {
                     initTabla();
                     IdUsuario=user.getId();
                     JOptionPane.showMessageDialog(this, "Logeado instructor: "+ user.getNom());
+                    jButtonInicio.setText("Sing out");
                     jDialogInicio.dispose();
                 }else{
                     JOptionPane.showMessageDialog(this, "Logeado usuario: "+ user.getNom()+" De momento sin implementar");
@@ -716,8 +738,14 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
-        jDialogInicio.pack();
-        jDialogInicio.setVisible(true);        // TODO add your handling code here:
+        if (logeado){
+            logeado=false;
+            actualizarListas();
+            jButtonInicio.setText("Login");
+        }else{
+            jDialogInicio.pack();
+            jDialogInicio.setVisible(true);  
+        }
     }//GEN-LAST:event_jButtonInicioActionPerformed
 
     private void jLabelWebMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelWebMouseClicked
@@ -734,15 +762,15 @@ public class Main extends javax.swing.JFrame {
         
         playVideo(row, model);
             
+        IdIntento = (int)jTableIntentos.getValueAt(row, 0);
         String estado=jTableIntentos.getValueAt(row, 3).toString();
-                System.out.println(estado);
-                if (estado.equals("Pendiente")){
-                    jButtonModificar.setVisible(false);
-                    jButtonEscribir.setVisible(true);
-                }else{
-                    jButtonEscribir.setVisible(false);
-                    jButtonModificar.setVisible(true);
-                }
+        if (estado.equals("Pendiente")){
+            jButtonModificar.setVisible(false);
+            jButtonEscribir.setVisible(true);
+        }else{
+            jButtonEscribir.setVisible(false);
+            jButtonModificar.setVisible(true);
+        }
         
     }//GEN-LAST:event_jTableIntentosMouseClicked
 
@@ -763,35 +791,52 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonPausaActionPerformed
 
     private void jButtonEscribirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEscribirActionPerformed
+        jLabelID.setText("ID: "+IdIntento+" (Intento seleccionado)");
         jDialogEscribir.pack();
         jDialogEscribir.setVisible(true);  
     }//GEN-LAST:event_jButtonEscribirActionPerformed
 
     private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
+        jLabelID1.setText("ID: "+IdIntento+" (Intento seleccionado)");
+        Review rev=da.getReview(IdIntento);
+        jSpinnerValoracionEditar.setValue(rev.getValoracio());
+        jTextAreaComentarioEditar.setText(rev.getComentari());
         jDialogEditar.pack();
         jDialogEditar.setVisible(true);  
     }//GEN-LAST:event_jButtonModificarActionPerformed
 
     private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
+        jLabelEliminar.setText("<html> Estas seguro que quieres  <br>eliminar el intento "+IdIntento+"? </html>");
         jDialogEliminar.pack();
         jDialogEliminar.setVisible(true);  
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 
     private void jButtonEscribir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEscribir1ActionPerformed
-        // TODO add your handling code here:
+        int Valoracion = (int) jSpinnerValoracion.getValue();
+        String comentario = jTextAreaComentario.getText();
+        da.insertReview(IdIntento, IdUsuario, Valoracion, comentario);
+        jTableIntentos.repaint();
+        jDialogEscribir.dispose();
     }//GEN-LAST:event_jButtonEscribir1ActionPerformed
 
-    private void jTextFieldEmail3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEmail3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldEmail3ActionPerformed
-
-    private void jButtonLogin3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLogin3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonLogin3ActionPerformed
+    private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAceptarActionPerformed
+        da.eliminarIntento(IdIntento);
+        jDialogEliminar.dispose();
+        jTableIntentos.repaint();
+    }//GEN-LAST:event_jButtonAceptarActionPerformed
 
     private void jButtonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditarActionPerformed
-        // TODO add your handling code here:
+        Review rev=da.getReview(IdIntento);
+        int Valoracion = (int) jSpinnerValoracionEditar.getValue();
+        String comentario = jTextAreaComentarioEditar.getText();
+        da.updateReview(rev.getId(), Valoracion, comentario);
+        jTableIntentos.repaint();
+        jDialogEditar.dispose();
     }//GEN-LAST:event_jButtonEditarActionPerformed
+
+    private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
+        jDialogEliminar.dispose();
+    }//GEN-LAST:event_jButtonCancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -830,13 +875,14 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonAceptar;
+    private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonEditar;
     private javax.swing.JButton jButtonEliminar;
     private javax.swing.JButton jButtonEscribir;
     private javax.swing.JButton jButtonEscribir1;
     private javax.swing.JButton jButtonInicio;
     private javax.swing.JButton jButtonLogin;
-    private javax.swing.JButton jButtonLogin3;
     private javax.swing.JButton jButtonModificar;
     private javax.swing.JButton jButtonPausa;
     private javax.swing.JDialog jDialogEditar;
@@ -845,8 +891,10 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JDialog jDialogInicio;
     private javax.swing.JLabel jLabelClientes;
     private javax.swing.JLabel jLabelContra;
+    private javax.swing.JLabel jLabelEliminar;
     private javax.swing.JLabel jLabelEmail;
-    private javax.swing.JLabel jLabelEmail3;
+    private javax.swing.JLabel jLabelID;
+    private javax.swing.JLabel jLabelID1;
     private javax.swing.JLabel jLabelIcon;
     private javax.swing.JLabel jLabelIntentos;
     private javax.swing.JLabel jLabelValoracion;
@@ -869,11 +917,10 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSpinner jSpinnerValoracion;
-    private javax.swing.JSpinner jSpinnerValoracion1;
+    private javax.swing.JSpinner jSpinnerValoracionEditar;
     private javax.swing.JTable jTableIntentos;
     private javax.swing.JTextArea jTextAreaComentario;
-    private javax.swing.JTextArea jTextAreaComentario1;
+    private javax.swing.JTextArea jTextAreaComentarioEditar;
     private javax.swing.JTextField jTextFieldEmail;
-    private javax.swing.JTextField jTextFieldEmail3;
     // End of variables declaration//GEN-END:variables
 }
