@@ -25,8 +25,8 @@ import javax.swing.table.TableRowSorter;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 /**
- *
- * @author Alumne
+ * Clase principal del projecto
+ * @author Felip
  */
 public class Main extends javax.swing.JFrame {
     private final DataAccess da = new DataAccess();
@@ -41,7 +41,8 @@ public class Main extends javax.swing.JFrame {
     private boolean isPlaying;
 
     /**
-     * Creates new form Main
+     * 
+     * Inicia todos los componentes de la ventana
      */
     public Main() {
         initComponents();
@@ -54,8 +55,11 @@ public class Main extends javax.swing.JFrame {
         jButtonModificar.setVisible(false);
         jButtonEscribir.setVisible(false);
     }
-    
-    //Inicia el componente lista con los nombres de los usuarios
+
+
+    /**
+     * Inicia el componente lista con los nombres de los usuarios.
+     */
     public void initlista(){
         ArrayList<Usuari> usuaris = da.getUsuarios();
         DefaultListModel dlm = new DefaultListModel();
@@ -65,8 +69,10 @@ public class Main extends javax.swing.JFrame {
         jListClientes.setModel(dlm);
         actualizarPanel();
     }
-    
-    //Inicia el componente jTableIntentos con los intento sin review de todos los usuarios
+
+    /**
+     * Inicia el componente jTableIntentos con los intentos sin review de todos los usuarios.
+     */
     public void initTabla(){
         // Llamar al método que obtiene los intentos pendientes 
         ArrayList<Intent> attempts = da.getIntentosSinReview();
@@ -74,14 +80,13 @@ public class Main extends javax.swing.JFrame {
         // Crear un modelo para la JTable
         model = new TablasIntentos(attempts);
                 
-        //IMPLEMENTACIÓ SORTER
+        // IMPLEMENTACIÓN SORTER
         sorter = new TableRowSorter<>(model);
         jTableIntentos.setRowSorter(sorter);
 
-
-        // ORDENACIÓ X DEFECTE
+        // ORDENACIÓN POR DEFECTO
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-        sortKeys.add(new RowSorter.SortKey(0,SortOrder.ASCENDING)); // ordre desitjat;
+        sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING)); // orden deseado
         sorter.setSortKeys(sortKeys);
 
         // Asignar el modelo a la JTable
@@ -90,47 +95,58 @@ public class Main extends javax.swing.JFrame {
                 
         // Seleccionar automáticamente la primera fila de la JTable
         if (jTableIntentos.getRowCount() > 0) {
-            jTableIntentos.changeSelection(0, 0, false, false);// Selecciona la primera fila
+            jTableIntentos.changeSelection(0, 0, false, false); // Selecciona la primera fila
             
             playVideo(0, model);
         }
     }
-    
-    //Inicia el componente mp
+
+    /**
+     * Inicia el componente de video.
+     */
     public void initVideoPlayer(){
         mp = new EmbeddedMediaPlayerComponent();
         mp.setSize(jPanelVideo.getWidth(), jPanelVideo.getHeight());
         jPanelVideo.add(mp, BorderLayout.CENTER);
     }
-    
-    //Ejecuta el video el intento
+
+    /**
+     * Ejecuta el video del intento seleccionado.
+     * 
+     * @param row la fila seleccionada
+     * @param model el modelo de la tabla de intentos
+     */
     public void playVideo(int row, TablasIntentos model){
-        Intent intento= model.getIntent(row);
-        String path= "src/main/java/videos/" + intento.getVideofile();
+        Intent intento = model.getIntent(row);
+        String path = "src/main/java/videos/" + intento.getVideofile();
 
         mp.mediaPlayer().media().play(path);
         isPlaying = true;
         jButtonPausa.setText("Pausar");
     }
-    
-    //Muestra o oculta el panel dependiendo del logeo
+
+    /**
+     * Muestra u oculta el panel dependiendo del estado de logeo.
+     */
     public void actualizarPanel(){
         jPanelListas.setVisible(logeado);
     }
-    
-    
+
+    /**
+     * Recarga la tabla con los intentos actualizados del usuario seleccionado.
+     */
     private void recargarTabla() {
         // Obtener los intentos actualizados del usuario seleccionado
         ArrayList<Intent> attempts = da.getIntentosDeUsuario(usuarioSeleccionado);
 
-        //Crear un nuevo modelo con los datos actualizados
+        // Crear un nuevo modelo con los datos actualizados
         model = new TablasIntentos(attempts);
 
-        //IMPLEMENTACIÓ SORTER
+        // IMPLEMENTACIÓN SORTER
         sorter = new TableRowSorter<>(model);
         jTableIntentos.setRowSorter(sorter);
 
-        //ORDENACION X DEFECTO
+        // ORDENACIÓN POR DEFECTO
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
         sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
         sorter.setSortKeys(sortKeys);
@@ -138,7 +154,7 @@ public class Main extends javax.swing.JFrame {
         // Asignar el modelo actualizado a la JTable
         jTableIntentos.setModel(model);
     }
-        
+            
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -755,9 +771,13 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Seleccion de alguien en la lista
-    private void jListClientesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListClientesValueChanged
-         // Verifica que el evento no sea un ajuste final de la selección
+    /**
+     * Maneja el evento de cambio de selección en la lista de clientes.
+     * 
+     * @param evt el evento de cambio de selección
+     */
+    private void jListClientesValueChanged(javax.swing.event.ListSelectionEvent evt) {
+        // Verifica que el evento no sea un ajuste final de la selección
         if (!evt.getValueIsAdjusting()) {
             // Obtener el valor seleccionado de jList1
             usuarioSeleccionado = (String) jListClientes.getSelectedValue();
@@ -768,192 +788,258 @@ public class Main extends javax.swing.JFrame {
                 
                 // Seleccionar automáticamente la primera fila de la JTable
                 if (jTableIntentos.getRowCount() > 0) {
-                    jTableIntentos.changeSelection(0, 5, false, false);// Selecciona la primera fila y 5 columna que es la del video
+                    jTableIntentos.changeSelection(0, 5, false, false); // Selecciona la primera fila y 5 columna que es la del video
                     
                     playVideo(0, model);
                 }
             }
         }   
-    }//GEN-LAST:event_jListClientesValueChanged
+    }
 
-    private void jTextFieldEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEmailActionPerformed
+    /**
+     * Maneja el evento de acción en el campo de texto de email.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jTextFieldEmailActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldEmailActionPerformed
+    }
 
-    //Boton del modal de login
-    private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        Usuari user= da.getUsuario(jTextFieldEmail.getText());
-        //Compruebo que este registrado
-        if (user != null){
-            //Compruebo la contraseña
-            char[] passToVery=jPasswordField.getPassword();
-            String passString=user.getPasswordHash();
+    /**
+     * Maneja el evento de acción del botón de login.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {
+        Usuari user = da.getUsuario(jTextFieldEmail.getText());
+        // Compruebo que esté registrado
+        if (user != null) {
+            // Compruebo la contraseña
+            char[] passToVery = jPasswordField.getPassword();
+            String passString = user.getPasswordHash();
             var result = BCrypt.verifyer().verify(passToVery, passString);
-            if(result.verified){
-                //Compruebo si es instructor
-                if(user.isInstructor()){
-                    //Logeado a true y muestro todo lo que debe ver un instructor
-                    logeado=true;
+            if (result.verified) {
+                // Compruebo si es instructor
+                if (user.isInstructor()) {
+                    // Logeado a true y muestro todo lo que debe ver un instructor
+                    logeado = true;
                     actualizarPanel();
                     initTabla();
-                    IdUsuario=user.getId();
-                    JOptionPane.showMessageDialog(this, "Logeado instructor: "+ user.getNom());
+                    IdUsuario = user.getId();
+                    JOptionPane.showMessageDialog(this, "Logeado instructor: " + user.getNom());
                     jButtonInicio.setText("Sing out");
                     jDialogInicio.dispose();
-                }else{//Es un usuario normal, lo cual aun no hay que implementar
-                    JOptionPane.showMessageDialog(this, "Logeado usuario: "+ user.getNom()+" De momento sin implementar");
+                } else { // Es un usuario normal, lo cual aún no hay que implementar
+                    JOptionPane.showMessageDialog(this, "Logeado usuario: " + user.getNom() + " De momento sin implementar");
                 }
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(this, "Contraseña incorrecta");
-                logeado=false;
+                logeado = false;
                 actualizarPanel();
             }
-        }else{
+        } else {
             JOptionPane.showMessageDialog(this, "Correo incorrecto");
-            logeado=false;
+            logeado = false;
             actualizarPanel();
         }
-    }//GEN-LAST:event_jButtonLoginActionPerformed
+    }
 
-    
-    //Boton de login y sing out 
-    private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicioActionPerformed
-        if (logeado){//Si esta logeado deslogea y actualiza al estado inicial
-            logeado=false;
+    /**
+     * Maneja el evento de acción del botón de inicio (login/sing out).
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonInicioActionPerformed(java.awt.event.ActionEvent evt) {
+        if (logeado) { // Si está logeado deslogea y actualiza al estado inicial
+            logeado = false;
             actualizarPanel();
             jButtonInicio.setText("Login");
-        }else{//Si no esta logeado abre el modal para logearte
+        } else { // Si no está logeado abre el modal para logearte
             jDialogInicio.pack();
             jDialogInicio.setVisible(true);  
         }
-    }//GEN-LAST:event_jButtonInicioActionPerformed
+    }
 
-    //Hace que la url de la web funcione
-    private void jLabelWebMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelWebMouseClicked
+    /**
+     * Maneja el evento de clic en la etiqueta de la web.
+     * 
+     * @param evt el evento de clic
+     */
+    private void jLabelWebMouseClicked(java.awt.event.MouseEvent evt) {
         try {
             Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"));
         } catch (URISyntaxException | IOException ex) {
             System.out.println("Algo fue mal");
         }        
-    }//GEN-LAST:event_jLabelWebMouseClicked
+    }
 
-    //Contola la seccion de un intento
-    private void jTableIntentosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableIntentosMouseClicked
+    /**
+     * Maneja el evento de clic en la tabla de intentos.
+     * 
+     * @param evt el evento de clic
+     */
+    private void jTableIntentosMouseClicked(java.awt.event.MouseEvent evt) {
         // Obtener la fila y columna de la celda que fue clickeada
         int row = jTableIntentos.rowAtPoint(evt.getPoint());
         
-        //Ejecuta el video
+        // Ejecuta el video
         playVideo(row, model);
             
-        //Coge el id del intento seleccionado
-        IdIntento = (int)jTableIntentos.getValueAt(row, 0);
+        // Coge el id del intento seleccionado
+        IdIntento = (int) jTableIntentos.getValueAt(row, 0);
         
-        //Coge el estado
-        String estado=jTableIntentos.getValueAt(row, 3).toString();
+        // Coge el estado
+        String estado = jTableIntentos.getValueAt(row, 3).toString();
         
-        //Si el estado es pendiente muestra el boton para escribir una review
-        if (estado.equals("Pendiente")){
+        // Si el estado es pendiente muestra el botón para escribir una review
+        if (estado.equals("Pendiente")) {
             jButtonModificar.setVisible(false);
             jButtonEscribir.setVisible(true);
-        }else{//de lo contrario muestra el de editar
+        } else { // De lo contrario muestra el de editar
             jButtonEscribir.setVisible(false);
             jButtonModificar.setVisible(true);
         }
-        
-    }//GEN-LAST:event_jTableIntentosMouseClicked
+    }
 
-    private void jTableIntentosPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTableIntentosPropertyChange
-    
-    }//GEN-LAST:event_jTableIntentosPropertyChange
+    /**
+     * Maneja el evento de cambio de propiedad en la tabla de intentos.
+     * 
+     * @param evt el evento de cambio de propiedad
+     */
+    private void jTableIntentosPropertyChange(java.beans.PropertyChangeEvent evt) {
+        // TODO add your handling code here:
+    }
 
-    //Controla el pause y despause del video
-    private void jButtonPausaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPausaActionPerformed
-        if (isPlaying){
+    /**
+     * Maneja el evento de acción del botón de pausa.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonPausaActionPerformed(java.awt.event.ActionEvent evt) {
+        if (isPlaying) {
             mp.mediaPlayer().controls().pause();
             isPlaying = false;
             jButtonPausa.setText("Despausar");
-        }else{
+        } else {
             mp.mediaPlayer().controls().start();
             isPlaying = true;
             jButtonPausa.setText("Pausar");
         }
-    }//GEN-LAST:event_jButtonPausaActionPerformed
+    }
 
-    //Crea modal Escribir review
-    private void jButtonEscribirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEscribirActionPerformed
-        jLabelID.setText("ID: "+IdIntento+" (Intento seleccionado)");
+    /**
+     * Maneja el evento de acción del botón para escribir una review.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonEscribirActionPerformed(java.awt.event.ActionEvent evt) {
+        jLabelID.setText("ID: " + IdIntento + " (Intento seleccionado)");
         jDialogEscribir.pack();
         jDialogEscribir.setVisible(true);  
-    }//GEN-LAST:event_jButtonEscribirActionPerformed
- 
-    //Crea modal Editar con los datos actuales de la review
-    private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModificarActionPerformed
-        jLabelID1.setText("ID: "+IdIntento+" (Intento seleccionado)");
-        Review rev=da.getReview(IdIntento);
+    }
+
+    /**
+     * Maneja el evento de acción del botón para modificar una review.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonModificarActionPerformed(java.awt.event.ActionEvent evt) {
+        jLabelID1.setText("ID: " + IdIntento + " (Intento seleccionado)");
+        Review rev = da.getReview(IdIntento);
         jSpinnerValoracionEditar.setValue(rev.getValoracio());
         jTextAreaComentarioEditar.setText(rev.getComentari());
         jDialogEditar.pack();
         jDialogEditar.setVisible(true);  
-    }//GEN-LAST:event_jButtonModificarActionPerformed
+    }
 
-    //Crea modal Eliminar
-    private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
-        jLabelEliminar.setText("<html> Estas seguro que quieres  <br>eliminar el intento "+IdIntento+"? </html>");
+    /**
+     * Maneja el evento de acción del botón para eliminar un intento.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {
+        jLabelEliminar.setText("<html> Estas seguro que quieres  <br>eliminar el intento " + IdIntento + "? </html>");
         jDialogEliminar.pack();
         jDialogEliminar.setVisible(true);  
-    }//GEN-LAST:event_jButtonEliminarActionPerformed
+    }
 
-    //Escribir la review
-    private void jButtonEscribir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEscribir1ActionPerformed
+    /**
+     * Maneja el evento de acción del botón para confirmar la escritura de una review.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonEscribir1ActionPerformed(java.awt.event.ActionEvent evt) {
         int Valoracion = (int) jSpinnerValoracion.getValue();
         String comentario = jTextAreaComentario.getText();
         da.insertReview(IdIntento, IdUsuario, Valoracion, comentario);
-        if (usuarioSeleccionado != null) recargarTabla();else initTabla();
+        if (usuarioSeleccionado != null) recargarTabla(); else initTabla();
         jDialogEscribir.dispose();
-    }//GEN-LAST:event_jButtonEscribir1ActionPerformed
+    }
 
-    //Aceptar la eliminacion
-    private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAceptarActionPerformed
+    /**
+     * Maneja el evento de acción del botón para aceptar la eliminación de un intento.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonAceptarActionPerformed(java.awt.event.ActionEvent evt) {
         da.eliminarIntento(IdIntento);
-        if (usuarioSeleccionado != null) recargarTabla();else initTabla();
+        if (usuarioSeleccionado != null) recargarTabla(); else initTabla();
         jDialogEliminar.dispose();
-    }//GEN-LAST:event_jButtonAceptarActionPerformed
-    
-    //Editar la review
-    private void jButtonEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditarActionPerformed
-        Review rev=da.getReview(IdIntento);
+    }
+
+    /**
+     * Maneja el evento de acción del botón para editar una review.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonEditarActionPerformed(java.awt.event.ActionEvent evt) {
+        Review rev = da.getReview(IdIntento);
         int Valoracion = (int) jSpinnerValoracionEditar.getValue();
         String comentario = jTextAreaComentarioEditar.getText();
         da.updateReview(rev.getId(), Valoracion, comentario);
         recargarTabla();
         jDialogEditar.dispose();
-    }//GEN-LAST:event_jButtonEditarActionPerformed
-
-    //Cancelar la eliminacion
-    private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
-        jDialogEliminar.dispose();
-    }//GEN-LAST:event_jButtonCancelarActionPerformed
-
-    //Genera about
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        jDialogAbout.pack();
-        jDialogAbout.setVisible(true);
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    //Cierra about
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        jDialogAbout.dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }
 
     /**
-     * @param args the command line arguments
+     * Maneja el evento de acción del botón para cancelar la eliminación de un intento.
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {
+        jDialogEliminar.dispose();
+    }
+
+    /**
+     * Maneja el evento de acción del menú para mostrar el diálogo "About".
+     * 
+     * @param evt el evento de acción
+     */
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {
+        jDialogAbout.pack();
+        jDialogAbout.setVisible(true);
+    }
+
+    /**
+     * Maneja el evento de acción del botón para cerrar el diálogo "About".
+     * 
+     * @param evt el evento de acción
+     */
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        jDialogAbout.dispose();
+    }
+
+    /**
+     * El método principal para ejecutar la aplicación.
+     * 
+     * @param args los argumentos de la línea de comandos
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -976,7 +1062,6 @@ public class Main extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Main().setVisible(true);
-                
             }
         });
     }

@@ -33,7 +33,7 @@ public class DataAccess {
         }
 
         Connection connection=null;
-        String coString="jdbc:sqlserver://localhost;database=simulapdb202315101357;";
+        String coString="jdbc:sqlserver://spdvi2024sqlserverftr.database.windows.net:1433;database=simulapdb;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
         try {
              connection=DriverManager.getConnection(coString, properties);
         } catch (SQLException ex) {
