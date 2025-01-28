@@ -1,13 +1,8 @@
 package com.mycompany.projectofinal.dataacces;
 
 
-import com.mycompany.projectofinal.dto.Intent;
-import com.mycompany.projectofinal.dto.Review;
-import com.mycompany.projectofinal.dto.Usuari;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,9 +14,13 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mycompany.projectofinal.dto.Intent;
+import com.mycompany.projectofinal.dto.Review;
+import com.mycompany.projectofinal.dto.Usuari;
+
 /**
  *
- * @author Miguel
+ * @author Felip
  */
 public class DataAccess {
     private Connection getConnection(){

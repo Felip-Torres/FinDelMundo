@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
- * @author Alumne
+ * @author Felip
  */
 public class TablasIntentos extends AbstractTableModel{
     private List<Intent> listIntent;
