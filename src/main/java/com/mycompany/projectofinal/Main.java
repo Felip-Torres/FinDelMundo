@@ -27,6 +27,25 @@ import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 /**
  * Clase principal del projecto
  * @author Felip
+ * @version 1.1
+ * @see DataAccess
+ * @see TablasIntentos
+ * @see Usuari
+ * @see Intent
+ * @see Review
+ * @see BCrypt
+ * @see EmbeddedMediaPlayerComponent
+ * @see Desktop
+ * @see URI
+ * @see IOException
+ * @see URISyntaxException
+ * @see ArrayList
+ * @see DefaultListModel
+ * @see TableRowSorter
+ * @see SortOrder
+ * @see RowSorter.SortKey
+ * @see ImageIcon
+ * {@value #da} Objeto de la clase DataAccess
  */
 public class Main extends javax.swing.JFrame {
     private final DataAccess da = new DataAccess();
